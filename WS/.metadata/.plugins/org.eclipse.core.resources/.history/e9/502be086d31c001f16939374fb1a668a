@@ -1,0 +1,5 @@
+package com.cts.sba.services;
+
+public class GreetServiceSimpleImpl {
+
+}

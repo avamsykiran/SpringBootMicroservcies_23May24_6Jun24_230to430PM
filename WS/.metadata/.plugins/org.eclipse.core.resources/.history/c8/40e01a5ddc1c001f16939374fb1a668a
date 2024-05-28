@@ -1,0 +1,13 @@
+package com.cts.sba.utility;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class Counter {
+
+	private int seed;
+	
+	public int next() {
+		return ++seed;
+	}
+}

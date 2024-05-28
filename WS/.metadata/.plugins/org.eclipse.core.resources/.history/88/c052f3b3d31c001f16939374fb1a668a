@@ -1,0 +1,10 @@
+package com.cts.sba.services;
+
+public class GreetServiceSimpleImpl implements GreetService {
+
+	@Override
+	public String greetUser(String userName) {
+		return String.format("Hello %s!", userName);
+	}
+
+}
