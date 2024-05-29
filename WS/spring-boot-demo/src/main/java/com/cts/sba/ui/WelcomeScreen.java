@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.cts.sba.models.Employee;
 import com.cts.sba.services.GreetService;
 import com.cts.sba.utility.Counter;
 
@@ -52,6 +53,9 @@ public class WelcomeScreen implements CommandLineRunner {
 		System.out.println(c2.next());
 		System.out.println(c2.next());
 		System.out.println(c2.next());
+		
+		System.out.println(new Employee(101,"Vamsy Kiran",45000.0));
+		System.out.println(new Employee(102,"Sagar Guru Charan",65000.0));
 	}
 
 }
