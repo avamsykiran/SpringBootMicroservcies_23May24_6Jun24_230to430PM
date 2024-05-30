@@ -201,6 +201,8 @@ Project Lombok
     
 javax.validators
 
+    @Valid, BindingResult::hasErrors()
+
     @NotNull
     @NotBlank
     @Max
