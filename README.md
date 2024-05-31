@@ -125,6 +125,9 @@ Spring Web Rest API
     @Consumes
     @Produces
 
+    @RestControllerAdvice
+    @ExceptionHandler
+
 JPA - Annotations
 
         @Entity
@@ -198,6 +201,8 @@ Project Lombok
     @EqualsAndHashcode
     @AllArgConstructor
     @ToString
+    @Slf4j
+    @Log4j
     
 javax.validators
 
