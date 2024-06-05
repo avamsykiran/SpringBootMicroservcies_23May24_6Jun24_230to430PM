@@ -255,3 +255,349 @@ public class GlobalExceptionHandle {
     }
 }
         
+
+Micro Services
+------------------------------------------------------------------------------
+
+    Case Study BudgetTracking APP
+        1. We need to have different consumer or account holders to register
+        2. Each accountHolder mst be able to record his spending or earning transactions.
+        3. Generate a statement periodically displaying the total spending , the total earning and the balance.
+
+
+    Monolythical App 
+
+        One build per application that contains all the modules of the application.
+    
+        1. Scalability
+        2. Avialability
+        3. Interoperability
+
+            BudgetTracking Application
+                1. Profiles Module
+                2. Transactions Module
+                3. Statement Module
+
+    Microservices
+
+        A microservice is an isolated independently deployable module of a large
+        application eco system.
+
+            we will have a spearate deployment for SalesModule
+            we will have a spearate deployment for HRModule
+            we will have a spearate deployment for DeliveriesModules ...etc.,
+
+        Because each module is a spepart isolated deployment, we can scale them independnetly.
+        Each modules can be shut down, maintained and redeployed without stopping other services.
+        Each module (microservice) can be developed using any technology we want.
+
+        Chanllenges in Developing and Maintaining Microservices
+
+            - Decomposiiton
+            - Inter-Service Communication
+            - Single Point Of Contact
+            - Monitoring and Maintaining
+
+        Microservice Design Patterns
+
+            Sub-Domain Pattern guides through bounded-context.
+
+                We will decompose the budgetTrackinApp into 3 microservices
+                    (a) Profiles-Service
+                            AccountHolder
+                                accountHolderId
+                                fullName
+                                mobileNumber
+                                mailId
+                                userId
+                                password
+
+                    (b) Transactions-Service
+                            AccountHolder
+                                accoountHolderId
+                                txns: Set<Txn>
+
+                            Txn
+                                dateOfTxn
+                                txnId
+                                txnAmount
+                                txnType
+                                owner : AccountHolder
+
+                    (c) Statement-Service                
+                            AccountHolder
+                                accountHolderId
+                                fullName
+                                mobileNumber
+                                mailId
+
+                            Txn
+                                dateOfTxn
+                                txnId
+                                txnAmount
+                                txnType
+
+                            Statement
+                                owner : AccountHolder
+                                txns: Set<txns>
+                                startDate: Date
+                                endDate: Date
+                                totalSpending
+                                totalEarning
+                                balance
+
+            Shared Database Pattern
+
+                Having a single DB for all microservices
+                in brown field apps
+
+            Database Per Service Pattern
+
+                Each microservice has its own database
+                in all green field apps
+
+            Discovery Service Pattern
+
+                discovery-service
+                    |
+                    |- all microservices will register their address with discovery-service
+                    |- the address are retrived from here by the needy microservices
+
+            Data Aggregation Pattern
+
+                Aggregation is about desiging a microservice that can collect info
+                from other microservices analyze and aggreagate the data and pass the 
+                aggregated data to the client, saving the client from making multiple requests
+                for different parts of the data.
+
+                the 'statement-microservice' is an example for this pattern.
+
+            Client Side Component Pattern
+
+                Each component of the UI/UX application can place
+                their individual reqeusts to different microservices parellelly
+                and should be receiving the resposnes as well parllelly.     
+
+Decomposition by sub-domain
+
+    budgettracking 
+        profiles service
+            AccountHolder Entity
+                Long ahId
+                String fullName
+                String mobile
+                String mailId
+
+        txns service
+            AccountHolder Entity
+                Long ahId
+                Double currentBalance
+                Set<Txn> txns
+            Txn           Entity
+                Long txnId
+                String header
+                Double amount
+                TxnType type
+                LocalDate txnDate
+                AccountHolder holder
+
+        statement service
+            AccountHolder Model
+                Long ahId
+                String fullName
+                String mobile
+                String mailId
+                Double currentBalance
+
+            Txn           Model
+                Long txnId
+                String header
+                Double amount
+                TxnType type
+                LocalDate txnDate
+
+            Statement     Model
+                LocalDate start
+                LocalDate end
+                AccountHolder profile
+                Set<Txn> txns
+                totalCredit
+                totalDebit
+                statementBalance
+
+Aggregator Pattern
+
+    req for statement ------------> statement-service ---------------> profile service
+                                                    <---account holder data---
+                                                    --------------------> txns service
+                                                    <----list of txns-------
+                                     does the composition and computation
+            <---statement obj-------  into statement obj
+
+Discovery Service Design Pattern
+
+                discovery-service
+                (spring cloud netflix eureka discovery service)
+                        ↑|
+                    registration of urls 
+                    and retrival of urls
+                        |↓
+            -------------------------------------
+            |               |                   |
+    profile-service     txns-service     statement-service
+
+Api Gateway Pattern Design Pattern
+
+    Andriod App/Angular App/ReactJS App
+        ↑↓
+     api-gateway
+     (spring cloud api gateway)
+        |
+        |
+        | <---->   discovery-service
+            ↑    ( netflix eureka discovery service)
+            |            ↑|
+            |        registration of urls 
+            |       and retrival of urls
+            ↓            |↓
+            -------------------------------------
+            |               |                   |                
+    profile-service     txns-service     statement-service
+       
+
+
+Implementing Budget-tracker
+                                        
+    Step#1  implementing decomposed services and do inter-service communication and aggregator
+        in.bta:bta-profiles
+            dependencies
+                org.springframework.boot:spring-boot-starter-web
+                org.springframework.boot:spring-boot-devtools
+                org.springframework.cloud:spring-cloud-openfeign
+                mysq1:mysql-connector-java
+                org.springframework.boot:spring-boot-starter-data-jpa
+            configuaration
+                spring.application.name=profiles
+                server.port=9100
+
+                spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+                spring.datasource.username=root
+                spring.datasource.password=root
+                spring.datasource.url=jdbc:mysql://localhost:3306/bapsDB?createDatabaseIfNotExist=true
+                spring.jpa.hibernate.ddl-auto=update
+
+        in.bta:bta-txns
+            dependencies
+                org.springframework.boot:spring-boot-starter-web
+                org.springframework.boot:spring-boot-devtools
+                org.springframework.cloud:spring-cloud-openfeign
+                mysq1:mysql-connector-java
+                org.springframework.boot:spring-boot-starter-data-jpa
+            configuaration
+                spring.application.name=txns
+                server.port=9200
+
+                spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+                spring.datasource.username=root
+                spring.datasource.password=root
+                spring.datasource.url=jdbc:mysql://localhost:3306/batxnsDB?createDatabaseIfNotExist=true
+                spring.jpa.hibernate.ddl-auto=update
+
+        in.bta:bta-statement
+            dependencies
+                org.springframework.boot:spring-boot-starter-web
+                org.springframework.boot:spring-boot-devtools
+                org.springframework.cloud:spring-cloud-openfeign
+            configuaration
+                spring.application.name=statement
+                server.port=9300
+
+    Step#2  implementing discovery service and client side load balancing
+        in.bta:bta-discovery
+            dependencies
+                org.springframework.boot:spring-boot-devtools
+                org.springframework.cloud:spring-cloud-starter-netflix-eureka-server
+            configuaration
+                @EnableEurekaServer    on Application class
+
+                spring.application.name=discovery
+                server.port=9000
+
+                eureka.instance.hostname=localhost
+                eureka.client.registerWithEureka=false
+                eureka.client.fetchRegistry=false
+                eureka.client.serviceUrl.defaultZone=http://${eureka.instance.hostname}:${server.port}/eureka/
+                eureka.server.waitTimeInMsWhenSyncEmpty=0
+
+        in.bta:bta-profiles
+            dependencies
+                ++ org.springframework.cloud:spring-cloud-starter-netflix-eureka-client
+                ++ org.springframework.cloud:spring-cloud-starter-loadbalancer
+            configuaration
+                ++@EnableDiscoveryClient  on Application class
+
+                eureka.client.serviceUrl.defaultZone=http://localhost:9000/eureka/
+                eureka.client.initialInstanceInfoReplicationIntervalSeconds=5
+                eureka.client.registryFetchIntervalSeconds=5
+                eureka.instance.leaseRenewalIntervalInSeconds=5
+                eureka.instance.leaseExpirationDurationInSeconds=5
+
+                spring.cloud.loadbalancer.ribbon.enabled=false
+
+        in.bta:bta-txns
+            dependencies
+                ++ org.springframework.cloud:spring-cloud-starter-netflix-eureka-client
+                ++ org.springframework.cloud:spring-cloud-starter-loadbalancer
+            configuaration
+                ++@EnableDiscoveryClient  on Application class
+
+                eureka.client.serviceUrl.defaultZone=http://localhost:9000/eureka/
+                eureka.client.initialInstanceInfoReplicationIntervalSeconds=5
+                eureka.client.registryFetchIntervalSeconds=5
+                eureka.instance.leaseRenewalIntervalInSeconds=5
+                eureka.instance.leaseExpirationDurationInSeconds=5
+
+                spring.cloud.loadbalancer.ribbon.enabled=false
+
+        in.bta:bta-statement
+            dependencies
+                ++ org.springframework.cloud:spring-cloud-starter-netflix-eureka-client
+                ++ org.springframework.cloud:spring-cloud-starter-loadbalancer
+            configuaration
+                ++@EnableDiscoveryClient  on Application class
+
+                eureka.client.serviceUrl.defaultZone=http://localhost:9000/eureka/
+                eureka.client.initialInstanceInfoReplicationIntervalSeconds=5
+                eureka.client.registryFetchIntervalSeconds=5
+                eureka.instance.leaseRenewalIntervalInSeconds=5
+                eureka.instance.leaseExpirationDurationInSeconds=5
+
+                spring.cloud.loadbalancer.ribbon.enabled=false    
+
+    Step 3: Implement API Gateway Design Pattern
+        in.bta:bta-gateway
+            dependencies
+                org.springframework.boot:spring-boot-devtools
+                org.springframework.cloud:spring-cloud-starter-gateway
+                org.springframework.cloud:spring-cloud-starter-netflix-eureka-client
+                org.springframework.cloud:spring-cloud-starter-loadbalancer
+            configuaration
+                @EnableDiscoveryClient          on Application class
+
+                spring.application.name=gateway
+                server.port=9999
+
+                eureka.client.serviceUrl.defaultZone=http://localhost:9000/eureka/
+                eureka.client.initialInstanceInfoReplicationIntervalSeconds=5
+                eureka.client.registryFetchIntervalSeconds=5
+                eureka.instance.leaseRenewalIntervalInSeconds=5
+                eureka.instance.leaseExpirationDurationInSeconds=5
+
+                spring.cloud.gateway.discovery.locator.enabled=true
+                spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+                
+        in.bta:bta-discovery
+        in.bta:bta-profiles
+        in.bta:bta-txns
+        in.bta:bta-statement
+              

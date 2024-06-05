@@ -1019,3 +1019,9 @@
 2024-05-31 15:08:36,202 [Worker-28: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
 2024-05-31 15:08:36,215 [Worker-28: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
 2024-05-31 15:08:36,219 [Worker-28: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Cognizant\ongoing\SpringBootMicroservcies_23May24_6Jun24_230to430PM\WS\addressbook-api\src\test\resources
+2024-05-31 15:44:21,332 [Worker-31: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2024-05-31 15:44:21,334 [Worker-31: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2024-05-31 15:44:21,343 [Worker-31: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Cognizant\ongoing\SpringBootMicroservcies_23May24_6Jun24_230to430PM\WS\addressbook-api\src\test\resources
+2024-05-31 15:44:32,037 [Worker-35: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2024-05-31 15:44:32,088 [Worker-35: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2024-05-31 15:44:32,092 [Worker-35: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Cognizant\ongoing\SpringBootMicroservcies_23May24_6Jun24_230to430PM\WS\addressbook-api\src\test\resources
